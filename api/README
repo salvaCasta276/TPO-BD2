@@ -1,0 +1,67 @@
+# API TPO BD2
+
+## Descripción
+
+La API permite manejar accesos a la base de datos PSQL cargada con los datos de la catedra.
+
+## Requisitos
+
+- Node.js (recomendada la ultima version)
+- npm
+
+## Instalación
+
+1. Instalar dependencias:
+
+    ```
+    npm install
+    ```
+
+## Ejecución
+
+Para iniciar la API, ejecutar:
+
+    ```
+    npm start
+    ```
+
+La API se ejecutará en `http://localhost:3000`.
+En caso de no encontrarla en ese puerto, se indica el puerto utilizado en consola
+
+## POSTMAN
+Para poder importar una coleccion de POSTMAN que permite testear todos los metodos con datos pre-definidos
+Se incluyo un archivo `API.postman_collection` que se puede importar de forma sencilla en POSTMAN en la seccion de colecciones
+
+## Correr Tests
+
+Para correr los tests, ejecutar:
+    ```
+    npm test
+    ```
+
+## Endpoints
+
+### Clientes
+
+- `GET /clientes`: Obtiene una lista de todos los clientes.
+- `GET /clientes/:nro_cliente`: Obtiene el cliente dado el nro_cliente.
+- `POST /clientes`: Crea un nuevo cliente.
+- `PUT /clientes/:nro_cliente`: Actualiza el cliente dado el nro_cliente
+- `DELETE /clientes/:nro_cliente`: Elimina el cliente dado el nro_cliente
+
+### Productos
+
+- `GET /productos`: Obtiene una lista de todos los productos.
+- `GET /productos/:codigo_producto`: Obtiene el producto dado el codigo_producto.
+- `POST /productos`: Crea un nuevo producto.
+- `PUT /productos/:codigo_producto`: Actualiza el producto dado el codigo_producto
+- `DELETE /productos/:codigo_producto`: Elimina el producto dado el nro_cliente
+
+## Autores
+
+- CASTAGNINO, SALVADOR
+- ROSAUER HERRMANN, JUAN ADOLFO
+- SUAREZ DURRELS, NICOLAS
+
+
+
