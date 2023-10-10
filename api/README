@@ -5,6 +5,9 @@
 La API permite manejar accesos a la base de datos PSQL cargada con el schema y datos de la catedra.
 La API no crea, gestiona, ni inicializa la base de datos para llevarla al estado inicial de la catedra!
 
+### IMPORTANTE!
+Configurar el archivo .env con los datos de acceso correspondientes para la base de datos.
+
 ## Requisitos
 
 - Node.js (recomendada la ultima version)
