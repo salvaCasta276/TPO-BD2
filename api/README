@@ -2,7 +2,8 @@
 
 ## Descripción
 
-La API permite manejar accesos a la base de datos PSQL cargada con los datos de la catedra.
+La API permite manejar accesos a la base de datos PSQL cargada con el schema y datos de la catedra.
+La API no crea, gestiona, ni inicializa la base de datos para llevarla al estado inicial de la catedra!
 
 ## Requisitos
 
@@ -40,6 +41,15 @@ Para correr los tests, ejecutar:
     ```
 
 ## Endpoints
+Los endpoints utilizan un JSON en su body para recibir los parametros de los datos a insertar/actualizar.
+ejemplo para POST /clientes:
+{
+      "nro_cliente": 200,
+      "nombre": "Nicolas",
+      "apellido": "SD",
+      "direccion": "Paz 300",
+      "activo": 150
+}
 
 ### Clientes
 
