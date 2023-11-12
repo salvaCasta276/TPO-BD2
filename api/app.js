@@ -1,6 +1,6 @@
 require('dotenv').config();
 const express = require('express');
-const pool = require('./database');
+const { pool, mongoDB } = require('./database');
 const app = express();
 const port = 3000;
 
@@ -15,6 +15,8 @@ app.use(express.json()); // Para poder manejar JSON en el body
 // precio de un producto es sin IVA
 // 5 APIs totales
 
+
+// SQL! --- SQL -- SQL --- SQL --->
 
 // Rutas para manejar clientes
 app.get('/clientes', async (req, res) => {
@@ -212,6 +214,20 @@ try {
 app.listen(port, () => {
   console.log(`API corriendo en http://localhost:${port}`);
 });
+
+
+
+// MONGODB --> MONGODB --> MONGODB -->
+
+app.put('/transferirDatosMongoDB', async (req, res) => {
+  try {
+    await transferirDatos();
+    res.status(200).send('Datos transferidos a MongoDB');
+  } catch (err) {
+    res.status(500).send(err.message);
+  }
+});
+
 
 
 module.exports = app;
