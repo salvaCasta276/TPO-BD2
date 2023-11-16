@@ -1,0 +1,188 @@
+-- 1 trae automaticamente el id? SI!
+db.clientes.find({
+    nombre: "Wanda",
+    apellido: "Baker"
+}, {
+    telefonos: 1,
+    _id: 0
+})
+
+-- 2 No funciona con como esta ahora, hacer lookup o meter facturas en clientes
+db.clientes.find({
+    "facturas.0": { $exists: true }
+})
+
+-- 2.5 tal vez asi?
+db.clientes.find({
+  nro_cliente: {
+    $in: db.facturas.distinct("cliente_id")
+  }
+})
+
+-- 2.7 
+db.clientes.aggregate([
+    {
+        $lookup: {
+            from: "facturas",
+            localField: "nro_cliente",
+            foreignField: "nro_cliente",
+            as: "factura_info"
+        }
+    },
+    {
+        $match: { "factura_info": { $ne: [] } }
+    },
+    {
+        $project: { factura_info: 0 }
+    }
+])
+
+
+
+-- 3 No funciona con como esta ahora, hacer lookup o meter facturas en clientes
+db.clientes.find({
+    facturas: { $exists: false }
+})
+
+-- 3.5 tal vez asi?
+db.clientes.find({
+  nro_cliente: {
+    $nin: db.facturas.distinct("cliente_id")
+  }
+})
+
+--3.7
+db.clientes.aggregate([
+    {
+        $lookup: {
+            from: "facturas",
+            localField: "nro_cliente",
+            foreignField: "nro_cliente",
+            as: "factura_info"
+        }
+    },
+    {
+        $match: { "factura_info": { $eq: [] } }
+    },
+    {
+        $project: { factura_info: 0 }
+    }
+])
+
+
+
+-- 4 no estoy seguro
+db.productos.find({
+    _id: {
+        $in: db.facturas.distinct("detalles.codigo_producto")
+    }
+})
+
+-- 5 Aca estariamos mostrando todos los telefonos de una, a diferencia de antes
+db.clientes.find({}, { nombre: 1, apellido: 1, telefonos: 1 })
+
+
+-- 6
+db.clientes.aggregate([
+  {
+    $lookup: {
+      from: "facturas",
+      localField: "_id",
+      foreignField: "nro_cliente",
+      as: "facturas"
+    }
+  },
+  {
+    $project: {
+      _id: 1,
+      nombre: 1,
+      apellido: 1,
+      direccion: 1,
+      activo: 1,
+      totalFacturas: { $size: "$facturas" }
+    }
+  }
+]);
+
+-- 7
+db.facturas.aggregate([
+  {
+    $lookup: {
+      from: "clientes",
+      localField: "nro_cliente",
+      foreignField: "nro_cliente",
+      as: "cliente"
+    }
+  },
+  {
+    $match: {
+      $and: [
+        { "cliente.nombre": "Pandora" },
+        { "cliente.apellido": "Tate" }
+      ]
+    }
+  },
+])
+
+-- 8 estamos incluyendo los productos en el project pero podriamos no hacerlo 
+--para ser mas parecidos a la consulta sql
+db.facturas.aggregate([
+  {
+    $lookup: {
+      from: "productos",
+      localField: "detalles.codigo_producto",
+      foreignField: "codigo_producto",
+      as: "producto"
+    }
+  },
+  {
+    $match: {
+      "producto.marca": "In Faucibus Inc."
+    }
+  },
+])
+
+-- 9
+db.clientes.aggregate([
+  { $unwind: "$telefonos" }
+])
+
+
+-- 10
+db.clientes.aggregate([
+    {
+        $lookup: {
+            from: "facturas",
+            localField: "nro_cliente",
+            foreignField: "nro_cliente",
+            as: "gasto_info"
+        }
+    },
+    {
+        $unwind: {
+            path: "$gasto_info",
+            preserveNullAndEmptyArrays: true
+        }
+    },
+    {
+        $group: {
+            _id: "$nro_cliente",
+            nombre: { $first: "$nombre" },
+            apellido: { $first: "$apellido" },
+            gasto: { $sum: "$gasto_info.total_con_iva" }
+        }
+    },
+    {
+        $project: {
+            _id: 0,
+            nombre: 1,
+            apellido: 1,
+            gasto: { $ifNull: ["$gasto", 0] }
+        }
+    },
+    { $count: 'total'}
+])
+
+
+
+

@@ -1,0 +1,34 @@
+--VIEW 1. 
+db.createView("E01_FACTURAS_ORDENADAS", "E01_FACTURA", [
+{ $sort: {fecha: 1} } ]);
+
+
+
+-- VIEW 2. Productos no facturados
+
+db.createView(
+    "E01_PRODUCTOS_NO_FACTURADOS",
+    "productos",
+    [
+        {
+            $lookup: {
+                from: "facturas",
+                let: { codigoProd: "$codigo_producto" },
+                pipeline: [
+                    { $unwind: "$detalles" },
+                    { $match: { $expr: { $eq: ["$detalles.codigo_producto", "$$codigoProd"] } } },
+                    { $limit: 1 }
+                ],
+                as: "facturado"
+            }
+        },
+        {
+            $match: {
+                facturado: { $size: 0 }
+            }
+        },
+        {
+            $project: { facturado: 0 }
+        }
+    ]
+)
