@@ -18,57 +18,34 @@ const pool = new Pool({
   database: process.env.DB_DATABASE,
 });
 
-const mongoUrl = 'mongodb://'+process.env.MONGO_HOST+':'+process.env.MONGO_PORT;
-const mongoClient = new MongoClient(mongoUrl, { useNewUrlParser: true, useUnifiedTopology: true });
 
-let mongoDB;
+// 'mongodb://'+process.env.MONGO_HOST+':'+process.env.MONGO_PORT;
+const mongoUrl = 'mongodb://localhost:27017';
+const mongoClient = new MongoClient(mongoUrl);
 
-mongoClient.connect((err, client) => {
-  if (err) throw err;
-  mongoDB = client.db('nombreDeTuBaseDeDatos');
-  console.log('Conectado a MongoDB');
-});
+let mongoDB = mongoClient;
 
 
-async function transferirDatos() {
-  const clienteSql = await pool.connect();
 
-  try {
-    // Transferencia de Clientes
-    const resClientes = await clienteSql.query('SELECT * FROM E01_CLIENTE');
-    const collectionClientes = mongoDB.collection('clientes');
-
-    for (let cliente of resClientes.rows) {
-      const telefonos = await clienteSql.query('SELECT * FROM E01_TELEFONO WHERE nro_cliente = $1', [cliente.nro_cliente]);
-      cliente.telefonos = telefonos.rows;
-      await collectionClientes.updateOne({ nro_cliente: cliente.nro_cliente }, { $set: cliente }, { upsert: true });
-    }
-
-    // Transferencia de Productos
-    const resProductos = await clienteSql.query('SELECT * FROM E01_PRODUCTO');
-    const collectionProductos = mongoDB.collection('productos');
-
-    for (let producto of resProductos.rows) {
-      await collectionProductos.updateOne({ codigo_producto: producto.codigo_producto }, { $set: producto }, { upsert: true });
-    }
-
-    // Transferencia de Facturas
-    const resFacturas = await clienteSql.query('SELECT * FROM E01_FACTURA');
-    const collectionFacturas = mongoDB.collection('facturas');
-
-    for (let factura of resFacturas.rows) {
-      const detalles = await clienteSql.query('SELECT * FROM E01_DETALLE_FACTURA WHERE nro_factura = $1', [factura.nro_factura]);
-      factura.detalles = await Promise.all(detalles.rows.map(async (detalle) => {
-        const producto = await collectionProductos.findOne({ codigo_producto: detalle.codigo_producto });
-        detalle.producto_id = producto ? producto._id : null;
-        return detalle;
-      }));
-      await collectionFacturas.updateOne({ nro_factura: factura.nro_factura }, { $set: factura }, { upsert: true });
-    }
-  } finally {
-    clienteSql.release();
-  }
+async function prueba(){
+  console.log('prueba de client');
+  const client = new MongoClient('mongodb://localhost:27017', { monitorCommands: true });
+  await client.connect();
+  client.on('commandStarted', started => console.log(started));
+  const db = client.db('bd2'); // Referencia a la base de datos
+  await db.createCollection('pets');
+  await client.db('bd2').collection('pets').insertOne({ name: 'spot', kind: 'dog' });
+  console.log('prueba de client terminada');
 }
+
+prueba();
+
+// mongoClient.connect((err, client) => {
+//   if (err) throw err;
+//   mongoDB = client.db('bd2');
+//   console.log('Conectado a MongoDB');
+// });
+
 
 
 module.exports = { pool, mongoDB };

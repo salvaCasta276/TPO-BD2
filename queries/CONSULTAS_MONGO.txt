@@ -1,9 +1,10 @@
--- 1 trae automaticamente el id?
+-- 1 trae automaticamente el id? SI!
 db.clientes.find({
     nombre: "Wanda",
     apellido: "Baker"
 }, {
-    telefonos: 1
+    telefonos: 1,
+    _id: 0
 })
 
 -- 2 No funciona con como esta ahora, hacer lookup o meter facturas en clientes
