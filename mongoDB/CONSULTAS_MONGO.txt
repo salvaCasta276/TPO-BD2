@@ -1,4 +1,4 @@
--- 1 trae automaticamente el id? SI!
+-- 1
 db.clientes.find({
     nombre: "Wanda",
     apellido: "Baker"
@@ -7,19 +7,8 @@ db.clientes.find({
     _id: 0
 })
 
--- 2 No funciona con como esta ahora, hacer lookup o meter facturas en clientes
-db.clientes.find({
-    "facturas.0": { $exists: true }
-})
 
--- 2.5 tal vez asi?
-db.clientes.find({
-  nro_cliente: {
-    $in: db.facturas.distinct("cliente_id")
-  }
-})
-
--- 2.7 
+-- 2
 db.clientes.aggregate([
     {
         $lookup: {
@@ -37,21 +26,7 @@ db.clientes.aggregate([
     }
 ])
 
-
-
--- 3 No funciona con como esta ahora, hacer lookup o meter facturas en clientes
-db.clientes.find({
-    facturas: { $exists: false }
-})
-
--- 3.5 tal vez asi?
-db.clientes.find({
-  nro_cliente: {
-    $nin: db.facturas.distinct("cliente_id")
-  }
-})
-
---3.7
+-- 3
 db.clientes.aggregate([
     {
         $lookup: {
@@ -71,14 +46,14 @@ db.clientes.aggregate([
 
 
 
--- 4 no estoy seguro
+-- 4
 db.productos.find({
     _id: {
         $in: db.facturas.distinct("detalles.codigo_producto")
     }
 })
 
--- 5 Aca estariamos mostrando todos los telefonos de una, a diferencia de antes
+-- 5
 db.clientes.find({}, { nombre: 1, apellido: 1, telefonos: 1 })
 
 
@@ -125,7 +100,7 @@ db.facturas.aggregate([
 ])
 
 -- 8 estamos incluyendo los productos en el project pero podriamos no hacerlo 
---para ser mas parecidos a la consulta sql
+-- para ser mas parecidos a la consulta sql
 db.facturas.aggregate([
   {
     $lookup: {
