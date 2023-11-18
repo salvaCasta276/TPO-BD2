@@ -1,5 +1,4 @@
 const { Pool } = require('pg');
-const { MongoClient } = require('mongodb');
 
 console.log('Host:', process.env.DB_HOST);
 console.log('Port:', process.env.DB_PORT);

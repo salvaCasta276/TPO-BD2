@@ -22,15 +22,12 @@ def conectarPostgreSQL():
 
 
 def conectarMongoDB():
-    client = MongoClient('localhost', 27017)  # Conexión por defecto a MongoDB en localhost
-    db = client['bd2']  # Reemplaza con el nombre de tu base de datos
+    client = MongoClient('localhost', 27017) 
+    db = client['bd2']
     return db
 
 def transferir_datos(cliente_sql, mongo_db):
     try:
-        # print('pre a MongoDB')
-        # db = mongo_db['bd2']
-        # print('bd2 creada')
         db = mongo_db
         
         print('POR HACER CLIENTE')
@@ -87,7 +84,6 @@ def transferir_datos(cliente_sql, mongo_db):
     except Exception as e:
         print("Ocurrió un error durante la transferencia de datos: ", e)
     finally:
-        # Suponiendo que cliente_sql es una conexión a PostgreSQL
         cliente_sql.close()
 
 def convertir_fecha_a_datetime(factura):
@@ -100,16 +96,11 @@ def convertir_fecha_a_datetime(factura):
 conexion = conectarPostgreSQL()
 
 db = conectarMongoDB()
-coleccion = db['prueba']  # Reemplaza con el nombre de tu colección
+coleccion = db['prueba']
 coleccion.insert_one({'dato':'muy bueno'})
 
 from psycopg2.extras import RealDictCursor
 
-# dentro de tu función transferir_datos
 cursor = conexion.cursor(cursor_factory=RealDictCursor)
-
-# Ahora puedes acceder a los campos por nombre directamente
-
-# cursor = conexion.cursor()
 
 transferir_datos(cursor,db)
