@@ -4,7 +4,7 @@ db.clientes.find({
     apellido: "Baker"
 }, {
     telefonos: 1,
-    _id: 0
+    nro_cliente: 1
 })
 
 
